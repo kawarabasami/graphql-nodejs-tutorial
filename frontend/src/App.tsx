@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import './App.css';
+import { gql, useQuery } from '@apollo/client';
 
-function App() {
-  const [count, setCount] = useState(0)
+const BOOKS = gql`
+  query {
+    books {
+      title
+      author
+    }
+  }
+`;
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
+console.log(BOOKS);
+
+function Books() {
+  const { data, loading, error } = useQuery(BOOKS);
+
+  if (loading) {
+    return <div>ロード中...</div>;
+  }
+  if (error) {
+    return <div>エラー</div>;
+  }
+
+  return data.books.map(({ title, author }, i) => (
+    <div key={i}>
+      <p>
+        {author}:{title}
       </p>
-    </>
-  )
+    </div>
+  ));
 }
 
-export default App
+function App() {
+  return (
+    <div>
+      <h1>GraphQL TEST</h1>
+      <Books />
+    </div>
+  );
+}
+
+export default App;
